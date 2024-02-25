@@ -1,8 +1,10 @@
 const productsModel = require('./models/products.model')
+const url = require('url');
+
 
 class DBProductManager {
 
-    async getProducts(page, limit, sort, query) {
+    async getProducts(page, limit, sort, query, url) {
         try {
             const options = {
                 page,
@@ -18,6 +20,17 @@ class DBProductManager {
 
            return await productsModel.paginate(query, options)
            .then((res) => { 
+            let prevPageLink, nextPageLink
+            if (res.hasPrevPage){
+                url.searchParams.set('page', res.prevPage)
+                prevPageLink = url.href
+            }
+            
+            if (res.hasNextPage){
+                url.searchParams.set('page', res.nextPage)
+                nextPageLink = url.href
+            }
+
             return {
                 payload: res.payload,
                 totalPages: res.totalPages,
@@ -25,9 +38,9 @@ class DBProductManager {
                 nextPage: res.nextPage,
                 page: res.page,
                 hasPrevPage: res.hasPrevPage,
-                hasNextPage: res.hasNextPage
-                //prevLink: Link directo a la página previa (null si hasPrevPage=false)
-                //nextLink: Link directo a la página siguiente (null si hasNextPage=false)
+                hasNextPage: res.hasNextPage,
+                prevLink: prevPageLink ??  null,
+                nextLink: nextPageLink ??  null
                 } 
            })
            .catch((err) => {

@@ -4,6 +4,7 @@ const pathDB = path.join(`${__dirname}/../dao/products.json`)
 const ProductManager = require("../dao/ProductManager");
 const DBProductManager = require("../dao/DBProductManager");
 const products = new DBProductManager()
+const url = require('url');
 
 
 const router = Router()
@@ -23,7 +24,10 @@ router.get("/", (req, res) => {
             + req.query.category.slice(1) }
     }
 
-    products.getProducts(page, limit, sort, query).then(result => {
+    const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    console.log(url)
+
+    products.getProducts(page, limit, sort, query, url).then(result => {
 
         res.status(200).json(result);
         
