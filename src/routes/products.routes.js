@@ -9,13 +9,24 @@ const products = new DBProductManager()
 const router = Router()
 
 router.get("/", (req, res) => {
-    products.getProducts().then(result => {
+    const { page = 1, limit = 5, sort } = req.query;
 
-        if (req.query.limit){
-            res.status(200).json(result.slice(0,req.query.limit));
-        } else{
-            res.status(200).json(result);
+    let query = {}
+
+    if (req.query.status){
+        query = { status: req.query.status 
         }
+    }
+
+    if (req.query.category){
+        query = { category: req.query.category.charAt(0).toUpperCase()
+            + req.query.category.slice(1) }
+    }
+
+    products.getProducts(page, limit, sort, query).then(result => {
+
+        res.status(200).json(result);
+        
     }).catch(err => {
         console.log(err);
         res.status(400).json(err.message);

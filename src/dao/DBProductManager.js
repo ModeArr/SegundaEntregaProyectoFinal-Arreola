@@ -2,10 +2,37 @@ const productsModel = require('./models/products.model')
 
 class DBProductManager {
 
-    async getProducts() {
+    async getProducts(page, limit, sort, query) {
         try {
-            const allProducts = await productsModel.find({}).lean()
-            return allProducts
+            const options = {
+                page,
+                limit,
+                customLabels: {
+                    docs: 'payload'
+                },
+                lean: true
+            }
+            if (sort){
+                options.sort = { price: sort }
+            }
+
+           return await productsModel.paginate(query, options)
+           .then((res) => { 
+            return {
+                payload: res.payload,
+                totalPages: res.totalPages,
+                prevPage: res.prevPage,
+                nextPage: res.nextPage,
+                page: res.page,
+                hasPrevPage: res.hasPrevPage,
+                hasNextPage: res.hasNextPage
+                //prevLink: Link directo a la página previa (null si hasPrevPage=false)
+                //nextLink: Link directo a la página siguiente (null si hasNextPage=false)
+                } 
+           })
+           .catch((err) => {
+            throw new Error(err)
+             })
         } catch (error) {
             throw Error(error)
         }  

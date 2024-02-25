@@ -11,10 +11,24 @@ const router = Router()
 
 router.get('/', (req, res) => {
 
-    products.getProducts().then(result => {
+    const { page = 1, limit = 5, sort } = req.query;
+
+    let query = {}
+
+    if (req.query.status){
+        query = { status: req.query.status }
+    }
+
+    if (req.query.category){
+        query = { category: req.query.category.charAt(0).toUpperCase()
+            + req.query.category.slice(1) }
+    }
+
+    products.getProducts(page, limit, sort, query).then(result => {
+        console.log(result)
         res.render("index", {
             title: "Practica integracion proyecto final",
-            products: result,
+            products: result.payload,
             style: "styles.css"
         })
     }).catch(err => {
