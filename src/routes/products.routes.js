@@ -25,15 +25,14 @@ router.get("/", (req, res) => {
     }
 
     const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
-    console.log(url)
 
     products.getProducts(page, limit, sort, query, url).then(result => {
 
-        res.status(200).json(result);
+        res.status(200).json({status: "success", ...result});
         
     }).catch(err => {
         console.log(err);
-        res.status(400).json(err.message);
+        res.status(400).json({status: "error", message: err.message});
     });
 })
 
