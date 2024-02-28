@@ -37,4 +37,42 @@ router.post("/:cid/product/:pid", (req, res) => {
     });
 })
 
+router.delete("/:cid/product/:pid", (req,res) => {
+    const idCart = req.params.cid
+    const idProduct = req.params.pid
+
+    cart.deleteProductCart(idCart, idProduct).then(result => {
+        res.status(200).json(result);
+    }).catch(err => {
+        console.log(err);
+        res.status(400).json(err.message);
+    });
+})
+
+router.put("/:cid/product/:pid", (req,res) => {
+    const idCart = req.params.cid
+    const idProduct = req.params.pid
+    const quantity = req.query.quantity
+
+    cart.editProductQuantity(idCart, idProduct, quantity).then(result => {
+        res.status(200).json(result);
+    }).catch(err => {
+        console.log(err);
+        res.status(400).json(err.message);
+    });
+})
+
+router.delete("/:cid", (req,res) => {
+    const idCart = req.params.cid
+
+    cart.deleteAllCartProducts(idCart).then(result => {
+        res.status(200).json(result);
+    }).catch(err => {
+        console.log(err);
+        res.status(400).json(err.message);
+    });
+})
+
+
+
 module.exports = router

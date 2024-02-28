@@ -11,10 +11,11 @@ PORT = 8080
 API_PREFIX = "api"
 
 const app = express()
-const server = app.listen(PORT, () => {
-    console.log("SERVER FUNCIONANDO")
-})
-const io = require('socket.io')(server);
+
+app.use(express.urlencoded({ extends: true }));
+app.use(express.json()); 
+app.use(express.static(__dirname + '/public'))
+
 mongoose.connect('mongodb+srv://Coder:u9TPQxlvOLPXpuKA@coder-backend.qtumzqc.mongodb.net/?retryWrites=true&w=majority', {
     dbName: 'ecommerce',
   })
@@ -25,9 +26,10 @@ mongoose.connect('mongodb+srv://Coder:u9TPQxlvOLPXpuKA@coder-backend.qtumzqc.mon
         console.log("ERROR CONNECTING TO DB", err)
     })
 
-app.use(express.urlencoded({ extends: true }));
-app.use(express.json()); 
-app.use(express.static(__dirname + '/public'))
+const server = app.listen(PORT, () => {
+    console.log("SERVER FUNCIONANDO")
+})
+const io = require('socket.io')(server);
 
 app.engine("handlebars", handlebars.engine())
 app.set("views", path.join(`${__dirname}/views`))
