@@ -29,7 +29,7 @@ class DBCartManager {
 
     async getCartProducts(id){
         try {
-           const findCart = await cartsModel.findOne({_id: id}).lean()
+           const findCart = await cartsModel.findById(id).lean()
            .then((res) => {
             return res.products
            })

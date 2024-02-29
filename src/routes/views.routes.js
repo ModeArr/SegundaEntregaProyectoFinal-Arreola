@@ -105,9 +105,10 @@ router.get('/carts/:cid', (req, res) => {
     const idCart = req.params.cid
 
     cart.getCartProducts(idCart).then(result => {
-        res.render("cartsRoutes", {
-            title: "Proyecto final 2 - Productos en tiempo real",
-            products: result
+        console.log(result)
+        res.render("cart", {
+            title: "Proyecto final 2 - Carrito de Compras",
+            product: result
         })
     }).catch(err => {
         console.log(err);
