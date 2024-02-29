@@ -45,11 +45,26 @@ router.get('/', (req, res) => {
 })
 
 router.get('/realtimeproducts', (req, res) => {
+    const { page = 1, limit = 5, sort } = req.query;
 
-    products.getProducts().then(result => {
+    let query = {}
+
+    if (req.query.status){
+        query = { status: req.query.status 
+        }
+    }
+
+    if (req.query.category){
+        query = { category: req.query.category.charAt(0).toUpperCase()
+            + req.query.category.slice(1) }
+    }
+
+    const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
+
+    products.getProducts(page, limit, sort, query, url).then(result => {
         res.render("realtimeproducts", {
             title: "Proyecto final 2 - Productos en tiempo real",
-            products: result
+            products: result.payload
         })
     }).catch(err => {
         console.log(err);

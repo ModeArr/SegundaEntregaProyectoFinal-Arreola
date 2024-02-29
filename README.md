@@ -15,6 +15,12 @@
 #### El proyecto de integración pide que se realize la implementacion de MongoDB en nuestro proyecto que teniamois avanzado en el cual se utiliza HandleBars para Frontend, Node ExpressJs como backend y SocketIO para WebSocket.Tambien se pide implementar un chat usando SocketIO. Esta implementacion nos permitira mediante practica aprender a implementara MongoDB y Moongoe; así como usar WebSockets.
 
 ---
+## Links de vistas
+
+[Vista de todos los productos con paginacion](http://localhost:8080/products)
+[Vista de Carrito predeterminado](http://localhost:8080/carts/65df75400b81101bd1f5099d)
+[Vista Productos en Tiempo Real](http://localhost:8080/realtimeproducts)
+[Chat en tiempo real](http://localhost:8080/chat)
 
 ## Producto ejemplo para subir
 ```JSON
@@ -32,6 +38,31 @@
   }
 ```
 ## Cosas a realizadas
+
+### Obtener productos con formato de paginacion
+#### Para obtener el siguiente formato de paginacion:
+ 
+```JSON
+{
+    "status":"success/error",
+    "payload": "Resultado de los productos solicitados",
+    "totalPages": "Total de páginas",
+    "prevPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "page": "Página actual",
+    "hasPrevPage": "Indicador para saber si la página previa existe",
+    "hasNextPage": "Indicador para saber si la página siguiente existe",
+    "prevLink": "Link directo a la página previa (null si hasPrevPage=false)",
+    "nextLink": "Link directo a la página siguiente (null si hasNextPage=false)"
+}
+```
+#### se realizo la instalacion de mongoose-paginate-v2 para realizar la paginacion, para poder obtener esta respuesta se modifco la funcion del manager getProducts(), ahora esta recibira getProducts(page, limit, sort, query, url), esto para poder realizar todo el manejo de la respuesta por medio de productsModel.paginate. Primero se arma el arreglo options para el .paginate() este incluye el page(la pagina actual), limit(el limite de productos por pagina), customLabels ( para transformar el datoq ue entrega pagina docs y que lo mande como payload), lean: true(mandar el arreglo como JSON), se checa si se recibe un sort en el endpoint y se agrega a option para hacer un sort por precio. Se manda productsModel.paginate(query, options) para hacer el paginate el query viene del endpoint e indica si es que proviene alguna query de buscqueda desde el los querys del endpoint. Asi como se  recibe un url este un obejto usando la libreria URL el cual permite recibir el url y modificar tanto sus params como su todas sus partes. Es asi que en el then() del paginate se realiza el modeladop de la respuesta, se checa si se tiene PrevPage o NextPage y se modifican los searchParams del URL para luego poder agregarlos a las respuestas si es que no se tiene se regresa un null
+
+### Carrito nuevas features
+#### 
+
+---
+## Cosas ya hechas 
 
 ### Conectar Mongoose con MongoDB Atlas
 #### Se uso en app.js mongoose.connect para por medio de un url proporcionado por el servicio web de MongoDB Atlas conetarnos a las colecciones de los servicios que vamos usar, por medio dbName se especifica la base de datos en este caso "ecommerce" 
@@ -84,9 +115,6 @@
 
 ### router.post("/")
 ####
-
----
-## Cosas ya hechas 
 
 ### Agrego Handlebars
 #### Se agrego Handlebars meidante el handlebars.engine() con la libreria express-handlebars, tambien se agregaron las viwews y el layout Index y realtimeproducts. Se hizo una route para podre mandar hacer render de las dos vistas y asi mismo pedir ProductManager para poder obtener los productos y que estos endpoints los retornen
