@@ -6,6 +6,8 @@ const DBProductManager = require("../dao/DBProductManager");
 const products = new DBProductManager()
 const DBMessagesManager = require("../dao/DBMessagesManager");
 const messages = new DBMessagesManager()
+const DBCartManager = require("../dao/DBCartManager");
+const cart = new DBCartManager()
 
 
 const router = Router()
@@ -30,7 +32,7 @@ router.get('/', (req, res) => {
     products.getProducts(page, limit, sort, query, url).then(result => {
         console.log(result)
         res.render("index", {
-            title: "Practica integracion proyecto final",
+            title: "Proyecto final 2",
             products: result.payload,
             nextPage: result.nextLink,
             prevPage: result.prevLink,
@@ -46,7 +48,7 @@ router.get('/realtimeproducts', (req, res) => {
 
     products.getProducts().then(result => {
         res.render("realtimeproducts", {
-            title: "Practica integracion proyecto final - Productos en tiempo real",
+            title: "Proyecto final 2 - Productos en tiempo real",
             products: result
         })
     }).catch(err => {
@@ -59,8 +61,53 @@ router.get('/chat', (req, res) => {
 
     messages.getAllMessages().then(result => {
         res.render("chat", {
-            title: "Practica integracion proyecto final - Chat en tiempo real",
+            title: "Proyecto final 2 - Chat en tiempo real",
             messages: result
+        })
+    }).catch(err => {
+        console.log(err);
+        res.status(400).json(err.message);
+    });
+})
+
+router.get('/products', (req, res) => {
+    const { page = 1, limit = 5, sort } = req.query;
+
+    let query = {}
+
+    if (req.query.status){
+        query = { status: req.query.status 
+        }
+    }
+
+    if (req.query.category){
+        query = { category: req.query.category.charAt(0).toUpperCase()
+            + req.query.category.slice(1) }
+    }
+
+    const url = new URL(`${req.protocol}://${req.get('host')}${req.originalUrl}`);
+
+    products.getProducts(page, limit, sort, query, url).then(result => {
+        res.render("products", {
+            title: "Productos proyecto final",
+            products: result.payload,
+            nextPage: result.nextLink,
+            prevPage: result.prevLink,
+            style: "styles.css"
+        })
+    }).catch(err => {
+        console.log(err);
+        res.status(400).json(err.message);
+    });
+})
+
+router.get('/carts/:cid', (req, res) => {
+    const idCart = req.params.cid
+
+    cart.getCartProducts(idCart).then(result => {
+        res.render("cartsRoutes", {
+            title: "Proyecto final 2 - Productos en tiempo real",
+            products: result
         })
     }).catch(err => {
         console.log(err);
